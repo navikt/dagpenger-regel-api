@@ -59,15 +59,11 @@ dependencies {
     implementation(Ktor.authJwt)
     implementation(Ktor.locations)
     implementation(Ktor.micrometerMetrics)
+    implementation(Ktor.library("jackson"))
     implementation(Ktor.library("client-core"))
     implementation(Ktor.library("client-cio"))
     implementation(Dagpenger.Biblioteker.ktorUtils)
     implementation(Micrometer.prometheusRegistry)
-
-    implementation(Moshi.moshi)
-    implementation(Moshi.moshiAdapters)
-    implementation(Moshi.moshiKotlin)
-    implementation(Moshi.moshiKtor)
 
     implementation(Log4j2.api)
     implementation(Log4j2.core)

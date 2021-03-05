@@ -3,7 +3,7 @@ package no.nav.dagpenger.regel.api.models
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.events.Problem
 import no.nav.dagpenger.regel.api.models.Faktum.Mapper.faktumFrom
-import no.nav.dagpenger.regel.api.moshiInstance
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 
 data class Subsumsjon(
     val behovId: BehovId,
@@ -16,8 +16,7 @@ data class Subsumsjon(
 ) {
     companion object Mapper {
 
-        private val adapter = moshiInstance.adapter(Subsumsjon::class.java)
-        fun toJson(subsumsjon: Subsumsjon): String = adapter.toJson(subsumsjon)
+        fun toJson(subsumsjon: Subsumsjon): String = jacksonObjectMapper.writeValueAsString(subsumsjon)
 
         fun subsumsjonFrom(packet: Packet): Subsumsjon =
             Subsumsjon(

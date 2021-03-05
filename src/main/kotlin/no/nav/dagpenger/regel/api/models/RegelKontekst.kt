@@ -1,20 +1,20 @@
 package no.nav.dagpenger.regel.api.models
 
-import com.squareup.moshi.Json
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class RegelKontekst(val id: String, val type: Kontekst)
 
 enum class Kontekst {
-    @Json(name = "soknad")
+    @JsonProperty("soknad")
     SOKNAD,
-    @Json(name = "veiledning")
+    @JsonProperty("veiledning")
     VEILEDNING,
-    @Json(name = "vedtak")
+    @JsonProperty("vedtak")
     VEDTAK,
-    @Json(name = "revurdering")
+    @JsonProperty("revurdering")
     REVURDERING,
-    @Json(name = "forskudd")
+    @JsonProperty("forskudd")
     FORSKUDD,
-    @Json(name = "corona")
+    @JsonProperty("corona")
     CORONA // Todo: fjern når forskudd er ute
 }

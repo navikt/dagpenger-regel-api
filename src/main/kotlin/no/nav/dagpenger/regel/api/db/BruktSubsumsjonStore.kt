@@ -2,9 +2,8 @@ package no.nav.dagpenger.regel.api.db
 
 import mu.KotlinLogging
 import no.nav.dagpenger.regel.api.models.SubsumsjonId
-import no.nav.dagpenger.regel.api.moshiInstance
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 interface BruktSubsumsjonStore {
     fun insertSubsumsjonBrukt(internSubsumsjonBrukt: InternSubsumsjonBrukt): Int
@@ -24,31 +23,27 @@ data class EksternSubsumsjonBrukt(
 ) {
     companion object Mapper {
         private val LOGGER = KotlinLogging.logger { }
-        private val adapter = moshiInstance.adapter<EksternSubsumsjonBrukt>(EksternSubsumsjonBrukt::class.java)
         fun fromJson(json: String): EksternSubsumsjonBrukt? {
-            return runCatching { adapter.fromJson(json) }.onFailure { e -> LOGGER.warn("Failed to convert string to object", e) }.getOrNull()
+            return runCatching { jacksonObjectMapper.readValue(json, EksternSubsumsjonBrukt::class.java) }.onFailure { e -> LOGGER.warn("Failed to convert string to object", e) }.getOrNull()
         }
     }
 
     fun toJson(): String {
-        return adapter.toJson(this)
+        return jacksonObjectMapper.writeValueAsString(this)
     }
 }
 
 data class InternSubsumsjonBrukt(val id: String, val behandlingsId: String, val arenaTs: ZonedDateTime, val created: ZonedDateTime? = null) {
     companion object Mapper {
         private val LOGGER = KotlinLogging.logger { }
-        private val adapter = moshiInstance.adapter<InternSubsumsjonBrukt>(InternSubsumsjonBrukt::class.java)
         fun fromJson(json: String): InternSubsumsjonBrukt? {
-            return runCatching { adapter.fromJson(json) }.onFailure { e -> LOGGER.warn("Failed to convert string to object", e) }.getOrNull()
+            return runCatching { jacksonObjectMapper.readValue(json, InternSubsumsjonBrukt::class.java) }.onFailure { e -> LOGGER.warn("Failed to convert string to object", e) }.getOrNull()
         }
     }
 
     fun toJson(): String {
-        return adapter.toJson(this)
+        return jacksonObjectMapper.writeValueAsString(this)
     }
 }
-
-val isoFormat = DateTimeFormatter.ISO_ZONED_DATE_TIME
 
 internal class SubsumsjonBruktNotFoundException(override val message: String) : RuntimeException(message)

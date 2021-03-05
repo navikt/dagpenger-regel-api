@@ -11,16 +11,16 @@ import no.nav.dagpenger.regel.api.models.Kontekst
 import no.nav.dagpenger.regel.api.models.RegelKontekst
 import no.nav.dagpenger.regel.api.models.Subsumsjon
 import no.nav.dagpenger.regel.api.models.SubsumsjonSerDerException
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 internal object JsonAdapter {
-    private val objectMapper = jacksonObjectMapper()
 
     fun fromJson(jsonString: String): Subsumsjon {
         try {
-            return objectMapper.readTree(jsonString).let {
+            return jacksonObjectMapper.readTree(jsonString).let {
                 Subsumsjon(
                     behovId = BehovId(it["behovId"].asText()),
                     faktum = getFaktum(it),
@@ -41,10 +41,10 @@ internal object JsonAdapter {
     private fun JsonNode.asYearMonth(): YearMonth = YearMonth.parse(this.asText())
 
     private fun JsonNode.asMap(): Map<String, Any> =
-        objectMapper.convertValue(this, object : TypeReference<Map<String, Any>>() {})
+        jacksonObjectMapper.convertValue(this, object : TypeReference<Map<String, Any>>() {})
 
     private fun JsonNode.asProblem(): Problem =
-        objectMapper.convertValue(this, Problem::class.java)
+        jacksonObjectMapper.convertValue(this, Problem::class.java)
 
     private fun JsonNode.asInntektsPeriode() = InntektsPeriode(
         førsteMåned = this["førsteMåned"].asYearMonth(),

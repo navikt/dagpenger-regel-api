@@ -2,7 +2,7 @@ package no.nav.dagpenger.regel.api.models
 
 import de.huxhorn.sulky.ulid.ULID
 import no.nav.dagpenger.events.Packet
-import no.nav.dagpenger.regel.api.moshiInstance
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 import java.time.LocalDate
 
 internal val ulidGenerator = ULID()
@@ -38,11 +38,10 @@ data class InternBehov(
     fun toPacket() = toPacket(this)
 
     companion object Mapper {
-        private val adapter = moshiInstance.adapter(InternBehov::class.java)
 
-        fun toJson(internBehov: InternBehov): String = adapter.toJson(internBehov)
+        fun toJson(internBehov: InternBehov): String = jacksonObjectMapper.writeValueAsString(internBehov)
 
-        fun fromJson(json: String): InternBehov? = adapter.fromJson(json)
+        fun fromJson(json: String): InternBehov? = jacksonObjectMapper.readValue(json, InternBehov::class.java)
 
         fun toPacket(internBehov: InternBehov): Packet = Packet("{}").apply {
             this.putValue(PacketKeys.BEHOV_ID, internBehov.behovId.id)

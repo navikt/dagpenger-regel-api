@@ -1,7 +1,6 @@
 package no.nav.dagpenger.regel.api
 
-import com.ryanharter.ktor.moshi.moshi
-import com.squareup.moshi.JsonDataException
+import com.fasterxml.jackson.databind.JsonMappingException
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -13,7 +12,9 @@ import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.JacksonConverter
 import io.ktor.locations.Locations
 import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.request.path
@@ -49,6 +50,7 @@ import no.nav.dagpenger.regel.api.routing.lovverk
 import no.nav.dagpenger.regel.api.routing.metrics
 import no.nav.dagpenger.regel.api.routing.naischecks
 import no.nav.dagpenger.regel.api.routing.subsumsjon
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 import no.nav.dagpenger.regel.api.streams.DagpengerBehovProducer
 import no.nav.dagpenger.regel.api.streams.KafkaDagpengerBehovProducer
 import no.nav.dagpenger.regel.api.streams.KafkaSubsumsjonBruktConsumer
@@ -167,8 +169,9 @@ internal fun Application.api(
     }
 
     install(ContentNegotiation) {
-        moshi(moshiInstance)
+        register(ContentType.Application.Json, JacksonConverter(jacksonObjectMapper))
     }
+
     install(Locations)
 
     install(MicrometerMetrics) {
@@ -179,9 +182,11 @@ internal fun Application.api(
         exception<BadRequestException> { cause ->
             badRequest(cause)
         }
-        exception<JsonDataException> { cause ->
+
+        exception<JsonMappingException> { cause ->
             badRequest(cause)
         }
+
         exception<BehovNotFoundException> { cause ->
             notFound(cause)
         }

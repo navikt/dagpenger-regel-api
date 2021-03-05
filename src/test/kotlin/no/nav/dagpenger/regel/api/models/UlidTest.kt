@@ -1,7 +1,7 @@
 package no.nav.dagpenger.regel.api.models
 
 import io.kotest.assertions.throwables.shouldThrow
-import no.nav.dagpenger.regel.api.moshiInstance
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -45,10 +45,8 @@ class UlidTest {
 
     @Test
     fun `Should only show id when mapped to json`() {
-        val behovAdapter = moshiInstance.adapter(BehovId::class.java)
-        val subsumsjonAdapter = moshiInstance.adapter(SubsumsjonId::class.java)
-        val jsonBehov = behovAdapter.toJson(BehovId("01DSFTA586H33ESMTYMY6QD4ZD"))
-        val jsonSubsumsjon = subsumsjonAdapter.toJson(SubsumsjonId("01DSJ0SHHV49MJA6EJ8B7PSSXJ"))
+        val jsonBehov = jacksonObjectMapper.writeValueAsString(BehovId("01DSFTA586H33ESMTYMY6QD4ZD"))
+        val jsonSubsumsjon = jacksonObjectMapper.writeValueAsString(SubsumsjonId("01DSJ0SHHV49MJA6EJ8B7PSSXJ"))
         val behovShouldBe =
             """"01DSFTA586H33ESMTYMY6QD4ZD""""
         val subsumsjonShouldBe =

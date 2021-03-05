@@ -3,7 +3,7 @@ package no.nav.dagpenger.regel.api.auth
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.interfaces.Claim
-import com.squareup.moshi.Json
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.auth.jwt.JWTAuthenticationProvider
 import io.ktor.auth.jwt.JWTCredential
 import io.ktor.auth.jwt.JWTPrincipal
@@ -14,7 +14,7 @@ import io.ktor.client.engine.http
 import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import no.nav.dagpenger.events.moshiInstance
+import no.nav.dagpenger.regel.api.serder.jacksonObjectMapper
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
@@ -67,20 +67,20 @@ private val httpClient = HttpClient(CIO) {
 }
 
 internal data class AzureAdOpenIdConfiguration(
-    @Json(name = "jwks_uri")
+    @JsonProperty("jwks_uri")
     val jwksUri: String,
-    @Json(name = "issuer")
+    @JsonProperty("issuer")
     val issuer: String,
-    @Json(name = "token_endpoint")
+    @JsonProperty("token_endpoint")
     val tokenEndpoint: String,
-    @Json(name = "authorization_endpoint")
+    @JsonProperty("authorization_endpoint")
     val authorizationEndpoint: String
 )
 
 private fun meta(url: String): AzureAdOpenIdConfiguration {
     return runBlocking {
         httpClient.get<String>(url).let {
-            moshiInstance.adapter(AzureAdOpenIdConfiguration::class.java).fromJson(it)!!
+            jacksonObjectMapper.readValue(it, AzureAdOpenIdConfiguration::class.java)
         }
     }
 }
